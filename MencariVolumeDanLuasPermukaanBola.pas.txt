@@ -1,0 +1,17 @@
+program MenghitungVolumeDanLuasPermukaanBola;
+const
+ phi = 3.14;
+var
+ jari_jari : Integer;
+ Volume, Luas_permukaan : real;
+ 
+begin
+  write('Masukkan jari-jari = '); 
+  readln(jari_jari);
+  
+  Volume := 4/3*phi*jari_jari*jari_jari*jari_jari;
+  Luas_permukaan := 4*phi*jari_jari*jari_jari;
+
+  writeln('Luas permukaan bola = ', Luas_permukaan);
+  writeln('Volume bola = ', Volume : 0:2);
+end.
