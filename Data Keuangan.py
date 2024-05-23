@@ -1,6 +1,5 @@
 import json
 
-
 # Menu utama program
 def menu_utama():
     data_keuangan = muat_data()
