@@ -3,36 +3,40 @@ import random
 import sys
 import time
 
+import os
+os.system ('cls')
+
+# Warna
+colors = [
+    [255, 255, 255],  # WHITE
+    [0, 0, 0],        # BLACK
+    [0, 0, 255],      # BLUE
+    [0, 255, 0],      # GREEN
+]
+
+# Ukuran layar
+ukuran_layar = [400, 600]
+
 # Inisiasi Pygame
 pygame.init()
 
-# Warna
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-
-# Ukuran layar
-lebar_layar = 400
-tinggi_layar = 600
-
 # Setup layar
-layar = pygame.display.set_mode((lebar_layar, tinggi_layar))
+layar = pygame.display.set_mode((ukuran_layar[0], ukuran_layar[1]))
 pygame.display.set_caption("Flappy Box")
 
 # Variabel game
 box_x = 50
 box_y = 300
-ukuran_box = 30  
+ukuran_box = 30
 kecepatan_box = 0
 percepatan_box = 0.5
 box_flap = -8
 
 lebar_pipa = 70
 jarak_pipa = 150
-pipa_x = lebar_layar
+pipa_x = ukuran_layar[0]
 tinggi_pipa1 = random.randint(50, 400)
-tinggi_pipa2 = tinggi_layar - tinggi_pipa1 - jarak_pipa
+tinggi_pipa2 = ukuran_layar[1] - tinggi_pipa1 - jarak_pipa
 kecepatan_pipa = 3
 
 score = 0
@@ -41,12 +45,12 @@ ukuran_score = pygame.font.Font(None, 36)
 # Score Pemain
 def nilai_score():
     score_pemain = 'Score: ' + str(score)
-    score_hasil = ukuran_score.render(score_pemain, True, WHITE)
+    score_hasil = ukuran_score.render(score_pemain, True, colors[0])
     layar.blit(score_hasil, (10, 10))
 
 # game over dan menyimpan skor
 def game_over(player_name):
-    # Simpan skor dan nama ke dalam file
+    # Simpan score
     with open('score_pemain.txt', 'a') as file:
         file.write(player_name + ': ' + str(score) + '\n')
 
@@ -64,7 +68,7 @@ while running:
     for loncat in pygame.event.get():
         if loncat.type == pygame.QUIT:
             running = False
-        if loncat.type == pygame.KEYDOWN:
+        elif loncat.type == pygame.KEYDOWN:
             if loncat.key == pygame.K_SPACE:
                 kecepatan_box = box_flap  # kotak melompat
 
@@ -75,25 +79,26 @@ while running:
     # Posisi pipa
     pipa_x -= kecepatan_pipa
     if pipa_x < -lebar_pipa:
-        pipa_x = lebar_layar
+        pipa_x = ukuran_layar[0]
         tinggi_pipa1 = random.randint(50, 400)
-        tinggi_pipa2 = tinggi_layar - tinggi_pipa1 - jarak_pipa
+        tinggi_pipa2 = ukuran_layar[1] - tinggi_pipa1 - jarak_pipa
         score += 1
 
     # Tabrakan
-    pengaturan_box = pygame.Rect(box_x, box_y, ukuran_box, ukuran_box)
-    pengaturan_pipa1 = pygame.Rect(pipa_x, 0, lebar_pipa, tinggi_pipa1)
-    pengaturan_pipa2 = pygame.Rect(pipa_x, tinggi_pipa1 + jarak_pipa, lebar_pipa, tinggi_pipa2)
-    if pengaturan_box.colliderect(pengaturan_pipa1) or pengaturan_box.colliderect(pengaturan_pipa2) or box_y > tinggi_layar:
+    if (
+        box_x < pipa_x + lebar_pipa
+        and box_x + ukuran_box > pipa_x
+        and (box_y < tinggi_pipa1 or box_y + ukuran_box > tinggi_pipa1 + jarak_pipa)
+    ):
         # Input nama pemain dari terminal
-        player_name = input("Masukkan nama pemain: ")
+        player_name = input("Nama pemain: ")
         game_over(player_name)
 
     # Tampilan
-    layar.fill(BLUE) 
-    pygame.draw.rect(layar, WHITE, pengaturan_box)  # Gambar persegi panjang untuk box
-    pygame.draw.rect(layar, GREEN, pengaturan_pipa1)  # Gambar pipa atas
-    pygame.draw.rect(layar, GREEN, pengaturan_pipa2)  # Gambar pipa bawah
+    layar.fill(colors[2])  # BLUE
+    pygame.draw.rect(layar, colors[0], (box_x, box_y, ukuran_box, ukuran_box))  # Gambar box
+    pygame.draw.rect(layar, colors[3], (pipa_x, 0, lebar_pipa, tinggi_pipa1))  # Gambar pipa atas
+    pygame.draw.rect(layar, colors[3], (pipa_x, tinggi_pipa1 + jarak_pipa, lebar_pipa, tinggi_pipa2))  # Gambar pipa bawah
     nilai_score()
 
     pygame.display.flip()
